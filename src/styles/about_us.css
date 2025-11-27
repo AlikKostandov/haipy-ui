@@ -1,0 +1,95 @@
+.about-container {
+    /* та же сетка, но на десктопе 2 колонки под описание и команду */
+    grid-template-columns: minmax(320px, 1.2fr) 1fr;
+}
+
+/* чтобы карточки выглядели сбалансированно */
+.about-main, .about-team {
+    display: flex;
+    flex-direction: column;
+}
+
+.about-text p {
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+
+.about-text ul {
+    margin: 0 0 12px 1.2rem;
+    padding: 0;
+    color: var(--muted);
+}
+
+.about-text li {
+    margin-bottom: 4px;
+}
+
+/* Команда */
+.team-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+}
+
+.person-card {
+    display: flex;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+}
+
+.avatar-circle {
+    width: 90px;
+    height: 90px;
+    border-radius: 999px;
+    overflow: hidden;          /* обрезает фото под круг */
+    flex-shrink: 0;
+    background: var(--panel);  /* fallback, если фото не загрузится */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+}
+
+.avatar-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;         /* фото красиво вписывается */
+}
+
+
+.person-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.person-name {
+    font-weight: 600;
+}
+
+.person-role {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.person-desc {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.about-note {
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+/* адаптив для узких экранов */
+@media (max-width: 900px) {
+    .about-container {
+        grid-template-columns: 1fr;
+    }
+}

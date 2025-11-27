@@ -1,0 +1,25 @@
+/* JSON блок */
+.json-block {
+    padding: 0px 20px; /* ← отступы по бокам */
+    font-family: "JetBrains Mono", Menlo, monospace;
+    font-size: 14px;
+    white-space: pre;
+    overflow-x: auto;
+    line-height: 1.4;
+    color: #fff; /* базовый цвет для скобок */
+}
+
+/* ключи */
+.json-key {
+    color: #51B9FE; /* основной цвет страницы */
+}
+
+/* значения */
+.json-val {
+    color: #FF6D00; /* оранжевые */
+}
+
+/* запятые, скобки и т.п. */
+.json-punct {
+    color: #e6e6e6; /* белые/нейтральные */
+}

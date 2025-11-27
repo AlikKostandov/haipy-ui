@@ -1,0 +1,93 @@
+.container {
+    display: grid;
+    grid-template-columns: minmax(280px, 520px) 1fr;
+    gap: 24px;
+    padding: 28px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    align-items: stretch;      /* тянем обе колонки по высоте */
+}
+
+.left,
+.right {
+    min-width: 0
+}
+
+/* карточки слева и справа заполняют высоту строки грида */
+.left > .card,
+.right > .card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow)
+}
+
+.card-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 16px 8px
+}
+
+.card h2 {
+    margin: 0
+}
+
+.spacer {
+    flex: 1
+}
+
+.pad {
+    padding: 16px
+}
+
+/* правая карточка с табами тоже флекс и тянется по высоте */
+.tabs-card {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* область контента внутри tabs-card занимает всю высоту */
+.tabs-card .pad {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.tabs-wrap {
+    padding: 12px 16px 0
+}
+
+.footer {
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+    padding: 14px 20px;
+    margin-top: auto
+}
+
+@media (max-width:1000px) {
+    .container {
+        grid-template-columns: 1fr;
+        gap: 20px
+    }
+}
+
+@media (max-width:640px) {
+    .grid {
+        grid-template-columns: 1fr 1fr
+    }
+
+    .two-col {
+        grid-template-columns: 1fr
+    }
+}

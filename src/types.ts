@@ -1,0 +1,1 @@
+export type Rubric = Record<string, number>;

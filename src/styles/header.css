@@ -1,0 +1,76 @@
+.main-nav {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.nav-link {
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--muted);
+    font-size: 14px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.nav-link.is-active {
+    border-color: var(--border);
+    background: color-mix(in hsl, var(--panel) 18%, transparent);
+    color: var(--text);
+}
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    backdrop-filter: saturate(140%) blur(8px);
+    background: color-mix(in hsl, var(--bg) 80%, transparent);
+    border-bottom: 1px solid var(--border);
+    height: 64px;                /* было 56px — сделали чуть выше */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;             /* было 0 20px — чуть ближе к левому краю */
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Обёртка для текста HAIPy — можно будет сюда добавить логотип позже */
+.brand-main {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.brand-title {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+@media (max-width: 600px) {
+    .brand-title {
+        font-size: 20px;
+    }
+}
+
+
+/* Растянутый крестик для коллаба */
+.brand-x {
+    font-size: 22px;          /* крупнее */
+    font-weight: 300;         /* тонкий, изящный */
+    color: var(--muted);
+    line-height: 1;
+    transform: translateY(-1px);
+}
+
+/* Логотип МИЭМ справа от X */
+.miem-logo {
+    height: 22px;             /* можно поиграть 20–24px */
+    display: block;
+}
