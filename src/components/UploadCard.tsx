@@ -2,24 +2,40 @@ import React, { useRef, useState } from "react";
 import { IconUpload, IconJson } from "./icons";
 
 interface UploadCardProps {
-  onPick: (filename: string) => void;
+  onPick: (file: File) => void;
 }
 
 export function UploadCard({ onPick }: UploadCardProps) {
   const [hover, setHover] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const isIpynb = (file: File) =>
+    file.name.toLowerCase().endsWith(".ipynb");
+
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setHover(false);
+
     const file = e.dataTransfer.files?.[0];
-    if (file) onPick(file.name);
+    if (file && isIpynb(file)) {
+      onPick(file);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    const file = e.dataTransfer.items?.[0];
+    if (file?.kind === "file" && isIpynb(file.getAsFile()!)) {
+      e.preventDefault();
+      setHover(true);
+    }
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) onPick(file.name);
+    if (file && isIpynb(file)) {
+      onPick(file);
+    }
   };
 
   return (
@@ -33,10 +49,7 @@ export function UploadCard({ onPick }: UploadCardProps) {
 
       <div
         className={`dropzone${hover ? " is-hover" : ""}`}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setHover(true);
-        }}
+        onDragOver={handleDragOver}
         onDragLeave={() => setHover(false)}
         onDrop={handleDrop}
       >
@@ -55,13 +68,6 @@ export function UploadCard({ onPick }: UploadCardProps) {
           >
             Выбрать файл
           </button>
-          <button
-            className="btn btn-ghost"
-            type="button"
-            onClick={() => onPick("demo_notebook.ipynb")}
-          >
-            Демо
-          </button>
         </div>
 
         <input
@@ -72,11 +78,6 @@ export function UploadCard({ onPick }: UploadCardProps) {
           onChange={handleFileSelect}
         />
       </div>
-
-      <p className="hint">
-        Пока без отправки на сервер — чистый дизайн. Прогресс/очередь добавим
-        позже.
-      </p>
     </section>
   );
 }

@@ -4,7 +4,8 @@ import { Tabs } from "../components/Tabs.tsx";
 import { ResultCard } from "../components/ResultCard.tsx";
 import { JsonPreview } from "../components/JsonPreview.tsx";
 import type { Rubric } from "../types.ts";
-import { Header } from "../components/Header.tsx"
+import { Header } from "../components/Header.tsx";
+import { evaluateNotebook, type BackendResponse } from "../api.ts";
 
 import "../styles/core.css";
 import "../styles/header.css";
@@ -19,35 +20,51 @@ interface HomeProps {
 }
 
 export default function Home({ onNavigate }: HomeProps) {
-  const [file, setFile] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [tab, setTab] = useState<MainTab>("report");
+  const [result, setResult] = useState<BackendResponse | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const rubric: Rubric = {
-    correctness: 48,
-    completeness: 16,
-    analysis_quality: 8,
-    structure: 3,
+  const onPick = async (file: File) => {
+    console.log("Sending file to backend:", file.name, file.size);
+
+    setSelectedFile(file);
+    setTab("report");
+    setLoading(true);
+    setError(null);
+    setResult(null);
+
+    try {
+      const data = await evaluateNotebook(file);
+      setResult(data);
+    } catch (e: any) {
+      setError(e?.message ?? "Ошибка запроса");
+    } finally {
+      setLoading(false);
+    }
   };
-  const score = Object.values(rubric).reduce((a, b) => a + b, 0);
-  const issues = [
-    "failed_test: test_sum_negative",
-    "lint: E302 expected 2 blank lines",
-    "timeout: cell_12 > 10s",
-  ];
-  const feedback = [
-    "Добавьте обработку пустого ввода в predict().",
-    "Опишите в Markdown источник данных и методику.",
-    "Сократите время fit: ограничьте признаки или используйте кэш.",
-  ];
+
+  const filename = selectedFile?.name ?? null;
+
+  const rubric: Rubric = result?.rubric ?? {
+    correctness: 0,
+    completeness: 0,
+    analysis_quality: 0,
+    structure: 0,
+  };
+
+  const score = result?.score_total ?? 0;
+  const issues = result?.issues ?? [];
+  const feedback = result?.feedback ?? [];
 
   return (
     <div className="page">
-
       <Header active="home" onNavigate={onNavigate!} />
 
       <main className="container">
         <div className="left">
-          <UploadCard onPick={(name) => setFile(name)} />
+          <UploadCard onPick={onPick} />
         </div>
 
         <div className="right">
@@ -73,14 +90,16 @@ export default function Home({ onNavigate }: HomeProps) {
 
               <button
                 className="btn btn-ghost"
-                disabled={!file}
+                disabled={!selectedFile}
                 onClick={() => {
-                  setFile(null);
+                  setSelectedFile(null);
+                  setResult(null);
+                  setError(null);
                   setTab("report");
                 }}
                 style={{
-                  opacity: file ? 1 : 0.4,
-                  cursor: file ? "pointer" : "not-allowed",
+                  opacity: selectedFile ? 1 : 0.4,
+                  cursor: selectedFile ? "pointer" : "not-allowed",
                 }}
               >
                 Сброс
@@ -88,12 +107,20 @@ export default function Home({ onNavigate }: HomeProps) {
             </div>
 
             <div className="pad">
-              {!file && <div className="empty">Загрузите ноутбук</div>}
+              {!selectedFile && <div className="empty">Загрузите ноутбук</div>}
 
-              {file && tab === "report" && (
+              {selectedFile && loading && <div className="empty">Обработка... ⏳</div>}
+
+              {selectedFile && error && (
+                <div className="empty" style={{ color: "var(--danger)" }}>
+                  {error}
+                </div>
+              )}
+
+              {selectedFile && result && tab === "report" && (
                 <ResultCard
                   mode="report"
-                  filename={file}
+                  filename={selectedFile.name}
                   score={score}
                   rubric={rubric}
                   issues={issues}
@@ -101,10 +128,10 @@ export default function Home({ onNavigate }: HomeProps) {
                 />
               )}
 
-              {file && tab === "issues" && (
+              {selectedFile && result && tab === "issues" && (
                 <ResultCard
                   mode="issues"
-                  filename={file}
+                  filename={selectedFile.name}
                   score={score}
                   rubric={rubric}
                   issues={issues}
@@ -112,10 +139,10 @@ export default function Home({ onNavigate }: HomeProps) {
                 />
               )}
 
-              {file && tab === "feedback" && (
+              {selectedFile && result && tab === "feedback" && (
                 <ResultCard
                   mode="feedback"
-                  filename={file}
+                  filename={selectedFile.name}
                   score={score}
                   rubric={rubric}
                   issues={issues}
@@ -123,9 +150,9 @@ export default function Home({ onNavigate }: HomeProps) {
                 />
               )}
 
-              {file && tab === "json" && (
+              {selectedFile && result && tab === "json" && (
                 <JsonPreview
-                  filename={file}
+                  filename={selectedFile.name}
                   score={score}
                   rubric={rubric}
                   issues={issues}
@@ -137,9 +164,7 @@ export default function Home({ onNavigate }: HomeProps) {
         </div>
       </main>
 
-      <footer className="footer">
-        © {new Date().getFullYear()} HAIPy — MVP UI
-      </footer>
+      <footer className="footer">© {new Date().getFullYear()} HAIPy — MVP UI</footer>
     </div>
   );
 }
