@@ -45,8 +45,6 @@ export default function Home({ onNavigate }: HomeProps) {
     }
   };
 
-  const filename = selectedFile?.name ?? null;
-
   const rubric: Rubric = result?.rubric ?? {
     correctness: 0,
     completeness: 0,
