@@ -4,6 +4,11 @@ import "../styles/header.css";
 import "../styles/layout.css";
 import "../styles/components.css";
 import "../styles/about_us.css";
+import alexander from "../assets/avatars/alexander.png";
+import radomir from "../assets/avatars/radomir.png";
+import david from "../assets/avatars/david.png";
+import gayane from "../assets/avatars/gayane.png";
+import alik from "../assets/avatars/alik.png";
 
 type Page = "home" | "about";
 
@@ -74,7 +79,7 @@ export default function About({ onNavigate }: AboutProps) {
             <div className="team-grid">
               <div className="person-card">
                 <div className="avatar-circle">
-                    <img src="src\assets\avatars\alexander.png" alt="Андреев Александр"/>
+                    <img src={alexander} alt="Андреев Александр" />
                 </div>
                 <div className="person-meta">
                   <div className="person-name">Андреев Александр</div>
@@ -84,7 +89,7 @@ export default function About({ onNavigate }: AboutProps) {
 
               <div className="person-card">
                 <div className="avatar-circle">
-                    <img src="src\assets\avatars\radomir.png" alt="Ткачев Радомир"/>
+                    <img src={radomir} alt="Ткачев Радомир"/>
                 </div>
                 <div className="person-meta">
                   <div className="person-name">Ткачев Радомир</div>
@@ -94,7 +99,7 @@ export default function About({ onNavigate }: AboutProps) {
 
               <div className="person-card">
                 <div className="avatar-circle">
-                    <img src="src\assets\avatars\david.png" alt="Кочарян Давид"/>
+                    <img src={david} alt="Кочарян Давид"/>
                 </div>
                 <div className="person-meta">
                   <div className="person-name">Кочарян Давид</div>
@@ -104,7 +109,7 @@ export default function About({ onNavigate }: AboutProps) {
 
               <div className="person-card">
                 <div className="avatar-circle">
-                    <img src="src\assets\avatars\gayane.png" alt="Власенко Гаянэ"/>
+                    <img src={gayane} alt="Власенко Гаянэ"/>
                 </div>
                 <div className="person-meta">
                   <div className="person-name">Власенко Гаянэ</div>
@@ -114,7 +119,7 @@ export default function About({ onNavigate }: AboutProps) {
 
               <div className="person-card">
                 <div className="avatar-circle">
-                    <img src="src\assets\avatars\alik.png" alt="Костандов Александр"/>
+                    <img src={alik} alt="Костандов Александр"/>
                 </div>
                 <div className="person-meta">
                   <div className="person-name">Костандов Александр</div>
