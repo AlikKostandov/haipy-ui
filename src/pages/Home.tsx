@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { UploadCard } from "../components/UploadCard.tsx";
 import { Tabs } from "../components/Tabs.tsx";
 import { ResultCard } from "../components/ResultCard.tsx";
 import { JsonPreview } from "../components/JsonPreview.tsx";
 import type { Rubric } from "../types.ts";
 import { Header } from "../components/Header.tsx";
-import { evaluateNotebook, type BackendResponse } from "../api.ts";
+import { checkBackendHealth, evaluateNotebook, type BackendResponse } from "../api.ts";
 
 import "../styles/core.css";
 import "../styles/header.css";
@@ -20,15 +20,46 @@ interface HomeProps {
 }
 
 export default function Home({ onNavigate }: HomeProps) {
+  const [apiKey, setApiKey] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [tab, setTab] = useState<MainTab>("report");
   const [result, setResult] = useState<BackendResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [backendOk, setBackendOk] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      setBackendOk(null);
+
+      const ok = await checkBackendHealth();
+      if (cancelled) return;
+
+      setBackendOk(ok);
+
+      if (!ok) {
+        setError("Сервис временно недоступен. Попробуйте обновить страницу позже.");
+      } else {
+        setError((prev) =>
+          prev?.toLowerCase().includes("Сервис недоступен") ? null : prev
+        );
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+
 
   const onPick = async (file: File) => {
-    console.log("Sending file to backend:", file.name, file.size);
-
+    if (backendOk === false) {
+      setError("Сервис недоступен. Попробуйте позже.");
+      return;
+    }
     setSelectedFile(file);
     setTab("report");
     setLoading(true);
@@ -36,7 +67,7 @@ export default function Home({ onNavigate }: HomeProps) {
     setResult(null);
 
     try {
-      const data = await evaluateNotebook(file);
+      const data = await evaluateNotebook(file, apiKey);
       setResult(data);
     } catch (e: any) {
       setError(e?.message ?? "Ошибка запроса");
@@ -62,7 +93,7 @@ export default function Home({ onNavigate }: HomeProps) {
 
       <main className="container">
         <div className="left">
-          <UploadCard onPick={onPick} />
+          <UploadCard onPick={onPick} apiKey={apiKey} onApiKeyChange={setApiKey} />
         </div>
 
         <div className="right">
@@ -105,15 +136,16 @@ export default function Home({ onNavigate }: HomeProps) {
             </div>
 
             <div className="pad">
-              {!selectedFile && <div className="empty">Загрузите ноутбук</div>}
+              {!selectedFile && !error && <div className="empty">Загрузите ноутбук</div>}
 
-              {selectedFile && loading && <div className="empty">Обработка... ⏳</div>}
+              {selectedFile && !error && loading && <div className="empty">Обработка... ⏳</div>}
 
-              {selectedFile && error && (
+              {error && (
                 <div className="empty" style={{ color: "var(--danger)" }}>
                   {error}
                 </div>
               )}
+
 
               {selectedFile && result && tab === "report" && (
                 <ResultCard
